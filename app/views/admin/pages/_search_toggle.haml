@@ -1,8 +1,10 @@
-%tr
-  %th.label
-    %label{:for => "page_search_toggle"} Search
+%tr#page-search-status
+  %th.label Search
   %td.field
-    = radio_button :page, :searchable, true
-    Searchable
-    = radio_button :page, :searchable, false
-    Invisible to Search
+    %ul.Inputs.HorizList
+      %li
+        = radio_button :page, :searchable, true, :class => 'RadioInput'
+        %label{:for => 'page_searchable_true' } Searchable
+      %li
+        = radio_button :page, :searchable, false, :class => 'RadioInput'
+        %label{:for => 'page_searchable_false' } Invisible to Search
