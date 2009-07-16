@@ -44,4 +44,28 @@ describe SphinxSearch::RadiusTags do
       @page.should render('<r:results:query/>').as('query')
     end
   end
+
+  describe "results:unless_query" do
+    it "should render if query was blank" do
+      @page.query = nil
+      @page.should render('<r:results:unless_query>enter query</r:results:unless_query>').as('enter query')
+    end
+
+    it "should not render if query is present" do
+      @page.query = 'harmonious'
+      @page.should render('<r:results:unless_query>please enter query</r:results:unless_query>').as('')
+    end
+  end
+
+  describe "results:if_empty" do
+    it "should render if results were blank" do
+      @page.results = Page.search 'bogus'
+      @page.should render('<r:results:if_empty>try again</r:results:if_empty>').as('try again')
+    end
+
+    it "should not render if any results" do
+      @page.results = Page.search 'harmonious'
+      @page.should render('<r:results:if_empty>try again</r:results:if_empty>').as('')
+    end
+  end
 end

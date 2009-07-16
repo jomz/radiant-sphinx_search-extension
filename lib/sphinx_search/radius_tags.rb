@@ -4,7 +4,7 @@ module SphinxSearch
     include ActionView::Helpers::TextHelper
 
     desc %{
-      Opens the array of search results. Will not expand if no results are found.
+      Opens the array of search results.
     }
     tag 'results' do |tag|
       tag.locals.results = tag.globals.page.results
@@ -36,5 +36,18 @@ module SphinxSearch
       end.join("\n")
     end
 
+    desc %{
+      Renders if no query parameter was passed. Useful for handling empty GETs to a search page.
+    }
+    tag 'results:unless_query' do |tag|
+      tag.expand if tag.globals.page.query.blank?
+    end
+
+    desc %{
+      Renders if no results were returned.
+    }
+    tag 'results:if_empty' do |tag|
+      tag.expand if tag.locals.results.empty?
+    end
   end
 end
