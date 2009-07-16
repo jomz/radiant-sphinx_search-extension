@@ -9,10 +9,6 @@ describe SearchPage do
     @response = ActionController::TestResponse.new
   end
 
-  it "should have a results array" do
-    @page.results.should == []
-  end
-
   it "should search Pages with query" do
     @request.query_parameters = {:query => 'harmonious'}
     @page.process(@request, @response)
