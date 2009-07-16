@@ -38,6 +38,20 @@ describe SphinxSearch::RadiusTags do
     end
   end
 
+  describe "results:current_page" do
+    it "should display current page of results" do
+      @page.results = Page.search 'harmonious'
+      @page.should render('<r:results:current_page/>').as('1')
+    end
+  end
+
+  describe "results:total_pages" do
+    it "should return total # of pages" do
+      @page.results = Page.search 'harmonious'
+      @page.should render('<r:results:total_pages/>').as('1')
+    end
+  end
+
   describe "results:query" do
     it "should sanitize query" do
       @page.query = '<script>query'

@@ -20,6 +20,20 @@ module SphinxSearch
     end
 
     desc %{
+      Returns the current page of search results.
+    }
+    tag 'results:current_page' do |tag|
+      tag.locals.results.current_page
+    end
+
+    desc %{
+      Returns the total number of pages of search results.
+    }
+    tag 'results:total_pages' do |tag|
+      tag.locals.results.total_pages
+    end
+
+    desc %{
       Displays the original search term, sanitized for display.
     }
     tag 'results:query' do |tag|
