@@ -7,7 +7,6 @@ module SphinxSearch
        set_property :field_weights => { 'title' => 100 }
        indexes title, parts.content
        has updated_at, status_id, searchable
-       where 'searchable = 1'
      end
    end
     
