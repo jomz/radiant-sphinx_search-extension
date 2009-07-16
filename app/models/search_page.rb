@@ -1,4 +1,5 @@
 class SearchPage < Page
+  include SphinxSearch::RadiusTags
   attr_accessor :results
 
   def after_initialize
