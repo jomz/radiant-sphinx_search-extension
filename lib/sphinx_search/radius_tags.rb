@@ -12,8 +12,8 @@ module SphinxSearch
     end
 
     desc %{
-      Displays the total number (unpaginated) of search results, with 'result' appended and pluralized as necessary,
-      e.g. "1 result" or "999 results".
+      Displays the total number (unpaginated) of search results, with 'result'
+      appended and pluralized as necessary, e.g. "1 result" or "999 results".
     }
     tag 'results:count' do |tag|
       pluralize tag.locals.results.total_entries, 'result'
@@ -27,7 +27,7 @@ module SphinxSearch
     end
 
     desc %{
-      Iterates over each search result. Sets `tag.locals.page` to the current result.
+      Iterates over each search result. Sets @tag.locals.page@ to the current result.
     }
     tag 'results:each' do |tag|
       tag.locals.results.collect do |result|
@@ -37,7 +37,22 @@ module SphinxSearch
     end
 
     desc %{
-      Renders if no query parameter was passed. Useful for handling empty GETs to a search page.
+      Renders pagination for the results. Takes optional @class@, @previous_label@,
+      @next_label@, @inner_window@, @outer_window@, and @separator@ attributes
+      which will be forwarded to the WillPaginate link renderer.
+    }
+    tag 'results:pagination' do |tag|
+      renderer = SphinxSearch::LinkRenderer.new(tag, tag.globals.page.query)
+      options = {}
+      [:class, :previous_label, :next_label, :inner_window, :outer_window, :separator, :per_page].each do |a|
+        options[a] = tag.attr[a.to_s] unless tag.attr[a.to_s].blank?
+      end
+      will_paginate tag.locals.results, options.merge(:renderer => renderer, :container => false)
+    end
+
+    desc %{
+      Renders if no query parameter was passed. Useful for handling empty GETs
+      to a search page.
     }
     tag 'results:unless_query' do |tag|
       tag.expand if tag.globals.page.query.blank?
