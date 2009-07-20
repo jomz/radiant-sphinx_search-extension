@@ -69,7 +69,15 @@ module SphinxSearch
       to a search page.
     }
     tag 'results:unless_query' do |tag|
-      tag.expand if tag.globals.page.query.blank?
+      tag.expand if tag.globals.page.query.nil?
+    end
+
+    desc %{
+      Renders unless no query parameter was passed. Useful for handling empty GETs
+      to a search page.
+    }
+    tag 'results:if_query' do |tag|
+      tag.expand unless tag.globals.page.query.nil?
     end
 
     desc %{
@@ -78,5 +86,6 @@ module SphinxSearch
     tag 'results:if_empty' do |tag|
       tag.expand if tag.locals.results.empty?
     end
+
   end
 end
