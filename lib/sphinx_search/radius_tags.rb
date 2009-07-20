@@ -87,5 +87,11 @@ module SphinxSearch
       tag.expand if tag.locals.results.empty?
     end
 
+    desc %{
+      Renders if no results were returned.
+    }
+    tag 'results:unless_empty' do |tag|
+      tag.expand unless tag.locals.results.empty?
+    end
   end
 end
