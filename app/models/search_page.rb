@@ -12,7 +12,7 @@ class SearchPage < Page
   def process(request, response)
     @query = request.params[:query]
     # Ensure search is not run with empty term
-    @results = @query.blank? ? ThinkingSphinx::Collection.new(0,@@per_page,0,0) :
+    @results = @query.blank? ? ThinkingSphinx::Search.new(0,@@per_page,0,0) :
                                Page.search(@query, :conditions => { :searchable => 1, :status_id => 100 }, :page => request.params[:page], :per_page => @@per_page)
     super
   end
