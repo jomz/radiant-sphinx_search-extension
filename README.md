@@ -44,6 +44,8 @@ The following Radius tags are available when building a SearchPage:
  * `results:query` The original query term. This is sanitized for safe 
    display.
  * `results:each` Iterator for the search result collection.
+ * `results:each:excerpt` Display the relevant excerpt for this search.
+   Requires ThinkingSphinx 1.2 or higher.
  * `results:pagination` Renders pagination links for the results collection.
    Accepts optional `class`, `previous_label`, `next_label`, `inner_window`, 
    `outer_window`, and `separator` attributes which will be forwarded to

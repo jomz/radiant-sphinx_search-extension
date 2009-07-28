@@ -26,6 +26,31 @@ describe SphinxSearch::RadiusTags do
     end
   end
 
+  describe "results:each:excerpt" do
+    it "should return excerpt from concatenated parts content if no `for` attr is passed" do
+      @page.results = Page.search 'harmonious'
+      @page.should render('<r:results:each><r:excerpt /></r:results:each>').matching %r{<span class="match">harmonious</span>}
+    end
+
+    it "should return excerpt from page title if `for` attr = title" do
+      @page.results = Page.search pages(:searchable).title
+      @page.should render('<r:results:each><r:excerpt for="title"/></r:results:each>').matching %r{<span class="match">#{pages(:searchable).title}</span>}
+    end
+
+    it "should return excerpt from named part if `for` specifies a part" do
+      @page.results = Page.search 'harmonious'
+      output = @page.send :parse, '<r:results:each><r:excerpt for="extended"/></r:results:each>'
+      output.should match(%r{<span class="match">harmonious</span>})
+      output.should_not match(%r{Hello world!})
+    end
+
+    it "should return nothing if named part does not exist" do
+      @page.results = Page.search 'harmonious'
+      output = @page.send :parse, '<r:results:each><r:excerpt for="bogus"/></r:results:each>'
+      output.should be_blank
+    end
+  end
+
   describe "results:count" do
     it "should return full count" do
       @page.results = Page.search 'harmonious'

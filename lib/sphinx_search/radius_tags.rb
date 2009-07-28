@@ -50,6 +50,23 @@ module SphinxSearch
       end.join("\n")
     end
 
+    # Requires ThinkingSphinx version 1.2 or higher.
+    desc %{
+      Returns the associated excerpt for each search result. Takes an optional
+      @for@ attribute that can be set to @title@ or the name of a specific page
+      part. If @for@ is omitted, the excerpt will be drawn from the concatenation
+      of all page parts. If it is set to @title@ or the name of a part, the
+      excerpted text will be limited to the page's title or the named part.
+    }
+    tag 'results:each:excerpt' do |tag|
+      content = case tag.attr['for']
+      when 'title' : tag.locals.page.title
+      when nil : tag.locals.page.parts.map(&:content).join(' ')
+      else tag.locals.page.part(tag.attr['for']).try(:content) || ''
+      end
+      tag.locals.results.excerpt_for(content)
+    end
+
     desc %{
       Renders pagination for the results. Takes optional @class@, @previous_label@,
       @next_label@, @inner_window@, @outer_window@, and @separator@ attributes
