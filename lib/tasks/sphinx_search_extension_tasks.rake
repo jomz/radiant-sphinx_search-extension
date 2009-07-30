@@ -31,6 +31,18 @@ namespace :radiant do
           cp file, RAILS_ROOT + path, :verbose => false
         end
       end
+
+      desc 'Run specs with coverage'
+      task :coverage do
+        Spec::Rake::SpecTask.new('radiant:extensions:sphinx_search:coverage') do |t|
+          t.spec_opts = ['--format profile', '--loadby mtime', '--reverse']
+          t.spec_files = FileList['vendor/extensions/sphinx_search/spec/**/*_spec.rb']
+          t.rcov = true
+          t.rcov_opts = ['--exclude', 'gems,spec,/usr/lib/ruby,config,vendor/radiant', '--include-file', 'vendor/extensions/sphinx_search/app,vendor/extensions/sphinx_search/lib', '--sort', 'coverage']
+          t.rcov_dir = 'coverage'
+        end
+      end
+
     end
   end
 end
