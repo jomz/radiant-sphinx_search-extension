@@ -11,7 +11,7 @@ http://github.com/mislav/wil_paginate
 
 Once installed, add these lines to environment.rb:
 
-    config.gem 'freelancing-god-thinking-sphinx', :lib => 'thinking_sphinx'
+    config.gem 'thinking-sphinx', :lib => 'thinking_sphinx'
     config.gem 'mislav-will_paginate', :lib => 'will_paginate'
 
 By default, only the first 8kB of any page's content will be indexed. You can 
@@ -52,6 +52,15 @@ The following Radius tags are available when building a SearchPage:
    WillPaginate's link renderer.
  * `results:unless_query` Expands if no `query` parameter was present.
  * `results:if_empty` Expands if the results collection was empty.
+
+## An Important Note About Page Subclasses
+
+Load order is important. If you're using extensions that add Page subclasses
+(**including the built-in Archive extension!**) you must load Sphinx Search
+first by specifying an extension load order in environment.rb. The simplest
+way is:
+
+    config.extensions = [:sphinx_search, :all]
 
 ------------------------------------------------------------------------------
 
