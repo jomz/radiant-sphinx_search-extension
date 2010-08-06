@@ -7,7 +7,14 @@ module SphinxSearch
       Opens the array of search results.
     }
     tag 'results' do |tag|
-      tag.locals.results = tag.globals.page.results
+      options = { :with => { :searchable => 1, :status_id => 100, :virtual => false }, :retry_stale => true }
+      tag.locals.query = tag.globals.page.request[Radiant::Config['search.param_name'].to_sym]
+      paging = pagination_find_options(tag)
+      if paging
+        options.merge!(paging)
+        tag.locals.pagination_opts = will_paginate_options(tag)
+      end
+      tag.locals.results ||= ThinkingSphinx.search(tag.locals.query, options)
       tag.expand
     end
 
@@ -37,7 +44,7 @@ module SphinxSearch
       Displays the original search term, sanitized for display.
     }
     tag 'results:query' do |tag|
-      ActionController::Base.helpers.strip_tags tag.globals.page.query
+      ActionController::Base.helpers.strip_tags tag.locals.query
     end
 
     desc %{
@@ -50,7 +57,6 @@ module SphinxSearch
       end.join("\n")
     end
 
-    # Requires ThinkingSphinx version 1.2 or higher.
     desc %{
       Returns the associated excerpt for each search result. Takes an optional
       @for@ attribute that can be set to @title@ or the name of a specific page
@@ -64,7 +70,7 @@ module SphinxSearch
       when nil : tag.locals.page.parts.map(&:content).join(' ')
       else tag.locals.page.part(tag.attr['for']).try(:content) || ''
       end
-      tag.locals.results.excerpt_for(content)
+      tag.locals.results.excerpt_for(content, tag.locals.page.class)
     end
 
     desc %{
@@ -73,12 +79,9 @@ module SphinxSearch
       which will be forwarded to the WillPaginate link renderer.
     }
     tag 'results:pagination' do |tag|
-      renderer = SphinxSearch::LinkRenderer.new(tag, tag.globals.page.query)
-      options = {}
-      [:class, :previous_label, :next_label, :inner_window, :outer_window, :separator, :per_page].each do |a|
-        options[a] = tag.attr[a.to_s] unless tag.attr[a.to_s].blank?
+      if tag.locals.results
+        will_paginate(tag.locals.results, tag.locals.pagination_opts)
       end
-      will_paginate tag.locals.results, options.merge(:renderer => renderer, :container => false)
     end
 
     desc %{
@@ -86,7 +89,7 @@ module SphinxSearch
       to a search page.
     }
     tag 'results:unless_query' do |tag|
-      tag.expand if tag.globals.page.query.nil?
+      tag.expand if tag.locals.query.blank?
     end
 
     desc %{
@@ -94,7 +97,7 @@ module SphinxSearch
       to a search page.
     }
     tag 'results:if_query' do |tag|
-      tag.expand unless tag.globals.page.query.nil?
+      tag.expand unless tag.locals.query.blank?
     end
 
     desc %{
@@ -109,6 +112,12 @@ module SphinxSearch
     }
     tag 'results:unless_empty' do |tag|
       tag.expand unless tag.locals.results.empty?
+    end
+
+    def will_paginate_options(tag)
+      options = super
+      options[:renderer] &&= SphinxSearch::LinkRenderer.new(tag.globals.page.url, tag.locals.query)
+      options
     end
   end
 end

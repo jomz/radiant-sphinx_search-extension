@@ -7,6 +7,7 @@ class SphinxSearchExtension < Radiant::Extension
     Page.send(:include, SphinxSearch::PageExtensions)
     PageContext.send(:include, SphinxSearch::PageContextExtensions)
     admin.page.edit.add :extended_metadata, "search_toggle"
+    Radiant::Config["search.param_name"] ||= 'q'
   end
   
   def deactivate
