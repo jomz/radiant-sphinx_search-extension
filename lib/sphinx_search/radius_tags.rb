@@ -7,7 +7,7 @@ module SphinxSearch
       Opens the array of search results.
     }
     tag 'results' do |tag|
-      options = { :with => { :searchable => 1, :status_id => 100, :virtual => false }, :retry_stale => true }
+      options = thinking_sphinx_options(tag)
       tag.locals.query = tag.globals.page.request[Radiant::Config['search.param_name'].to_sym]
       paging = pagination_find_options(tag)
       if paging
@@ -118,6 +118,10 @@ module SphinxSearch
       options = super
       options[:renderer] &&= SphinxSearch::LinkRenderer.new(tag.globals.page.url, tag.locals.query)
       options
+    end
+
+    def thinking_sphinx_options(tag)
+      { :with => { :searchable => 1, :status_id => 100, :virtual => false }, :retry_stale => true }
     end
   end
 end
