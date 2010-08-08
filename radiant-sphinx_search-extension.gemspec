@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{radiant-sphinx_search-extension}
-  s.version = "0.9.1"
+  s.version = "0.9.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Josh French", "Kunal Shah", "Justin Blecher"]
@@ -21,7 +21,6 @@ Gem::Specification.new do |s|
      "Rakefile",
      "VERSION",
      "app/models/search_page.rb",
-     "app/views/admin/pages/_search_toggle.haml",
      "db/migrate/20100808155751_add_delta_to_pages.rb",
      "lib/radiant-sphinx_search-extension.rb",
      "lib/sphinx_search.rb",

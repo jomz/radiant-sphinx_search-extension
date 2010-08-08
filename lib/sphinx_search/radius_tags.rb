@@ -15,18 +15,18 @@ module SphinxSearch
     desc %{
       Renders a basic search form. Takes optional @id@ and @class@ values if
       you need to target the form with specific CSS or JS; also takes an optional
-      @value@ tag as the label on the input. If for some reason you don't want
+      @button@ tag as the label on the input. If for some reason you don't want
       to use the default search term paramater @q@, you can override this by
       defining @SphinxSearch.param_name@ in @/config/initializers/sphinx_search.rb@.
 
       *Usage:*
 
-      <pre><code><r:search:form [id="form-id"] [class="form-class"] [value="Go"] /></code></pre>
+      <pre><code><r:search:form [id="form-id"] [class="form-class"] [button="Go"] /></code></pre>
     }
     tag 'search:form' do |tag|
       form_id = tag.attr['id'] || 'search-form'
       form_class = tag.attr['class'] || 'search-form'
-      form_value = tag.attr['value'] || 'Search'
+      form_value = tag.attr['button'] || 'Search'
       form_input = SphinxSearch.param_name || 'q'
       return <<-HTML
         <form action="#{tag.globals.page.url}" method="get" id="#{form_id}" class="#{form_class}">
