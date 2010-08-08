@@ -8,10 +8,17 @@ module SphinxSearch
        set_property :delta => true, :group_concat_max_len => SphinxSearch.content_length || 8.kilobytes
        set_property :field_weights => { 'title' => 100 }
        indexes title, parts.content
-       has updated_at, status_id, virtual, class_name
+       has updated_at, status_id, virtual
      end
 
+     base.extend ClassMethods
    end
-    
-  end
+
+   module ClassMethods
+     def searchable(search=true)
+       search ? SphinxSearch.hidden_classes.delete(self.name) : SphinxSearch.hidden_classes.push(self.name)
+     end
+   end
+
+   end
 end

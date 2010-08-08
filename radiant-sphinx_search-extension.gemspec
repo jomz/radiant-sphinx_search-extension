@@ -34,8 +34,8 @@ Gem::Specification.new do |s|
      "lib/templates/sphinx.yml",
      "radiant-sphinx_search-extension.gemspec",
      "spec/datasets/search_pages_dataset.rb",
-     "spec/lib/radiant-sphinx_search-extension.rb",
      "spec/lib/search_radius_tags_spec.rb",
+     "spec/models/page_spec.rb",
      "spec/spec.opts",
      "spec/spec_helper.rb",
      "sphinx_search_extension.rb"
@@ -47,8 +47,8 @@ Gem::Specification.new do |s|
   s.summary = %q{Sphinx Search Extension for Radiant CMS}
   s.test_files = [
     "spec/datasets/search_pages_dataset.rb",
-     "spec/lib/radiant-sphinx_search-extension.rb",
      "spec/lib/search_radius_tags_spec.rb",
+     "spec/models/page_spec.rb",
      "spec/spec_helper.rb"
   ]
 

@@ -158,7 +158,11 @@ module SphinxSearch
       end
 
       def thinking_sphinx_options(tag)
-        { :with => { :status_id => 100, :virtual => false }, :retry_stale => true }
+        {
+          :with => { :status_id => 100, :virtual => false },
+          :without => { :class_crc => SphinxSearch.hidden_classes.map(&:to_crc32) },
+          :retry_stale => true
+        }
       end
   end
 end

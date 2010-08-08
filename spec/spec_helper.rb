@@ -18,6 +18,7 @@ if File.directory?(File.dirname(__FILE__) + "/matchers")
 end
 
 Spec::Runner.configure do |config|
+  SphinxSearch.hidden_classes ||= %w(SearchPage JavascriptPage StylesheetPage)
   # config.use_transactional_fixtures = true
   # config.use_instantiated_fixtures  = false
   # config.fixture_path = RAILS_ROOT + '/spec/fixtures'

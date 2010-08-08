@@ -23,8 +23,7 @@ quickstart guide, but these commands should be enough to get you started:
 ## Indexing
 
 SphinxSearch indexes your pages on title and content (parts.) Sphinx
-attributes are created for `status_id`, `updated_at`, `virtual`, and
-`class_name`.
+attributes are created for `status_id`, `updated_at`, and `virtual`.
 
 ## Building a Search Page
 
