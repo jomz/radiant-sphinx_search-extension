@@ -7,7 +7,8 @@ module SphinxSearch
       Namespace for all search tags.
     }
     tag 'search' do |tag|
-      tag.locals.query = tag.globals.page.request[SphinxSearch.param_name.to_sym]
+      param = (SphinxSearch.param_name || 'q').to_sym
+      tag.locals.query = tag.globals.page.request[param]
       tag.expand
     end
 
