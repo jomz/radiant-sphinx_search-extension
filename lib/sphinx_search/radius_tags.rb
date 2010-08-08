@@ -4,73 +4,111 @@ module SphinxSearch
     include ActionView::Helpers::TextHelper
 
     desc %{
-      Opens the array of search results.
+      Namespace for search tags.
     }
-    tag 'results' do |tag|
-      options = thinking_sphinx_options(tag)
+    tag 'search' do |tag|
       tag.locals.query = tag.globals.page.request[Radiant::Config['search.param_name'].to_sym]
+      tag.expand
+    end
+
+    desc %{
+      Renders a basic search form.
+    }
+    tag 'search:form' do |tag|
+      form_id = tag.attr['id'] || 'search-form'
+      form_class = tag.attr['class'] || 'search-form'
+      form_value = tag.attr['value'] || 'Search'
+      form_input = Radiant::Config['search.param_name'] || 'q'
+      return <<-HTML
+        <form action="#{tag.globals.page.url}" method="get" id="#{form_id}" class="#{form_class}">
+          <input type="text" name="#{form_input}" value="#{tag.locals.query}">
+          <input type="submit" value="#{form_value}">
+        </form>
+      HTML
+    end
+
+    desc %{
+      Namespace for search results.
+    }
+    tag 'search:results' do |tag|
+      options = thinking_sphinx_options(tag)
       paging = pagination_find_options(tag)
       if paging
         options.merge!(paging)
         tag.locals.pagination_opts = will_paginate_options(tag)
       end
-      tag.locals.results ||= ThinkingSphinx.search(tag.locals.query, options)
-      tag.expand
+      tag.globals.results ||= ThinkingSphinx.search(tag.locals.query, options)
+      tag.expand if tag.globals.results.any? and not tag.locals.query.blank?
     end
 
     desc %{
-      Displays the total number (unpaginated) of search results, with 'result'
-      appended and pluralized as necessary, e.g. "1 result" or "999 results".
+      Renders if no results were returned.
     }
-    tag 'results:count' do |tag|
-      pluralize tag.locals.results.total_entries, 'result'
+    tag 'search:no_results' do |tag|
+      tag.expand if tag.globals.results.blank? and not tag.locals.query.blank?
+    end
+
+    desc %{
+      Displays the total (unpaginated) number of search results, in the format
+      *X results.* If you would like a different label than "result", pass
+      the optional @label@ attribute. The label will be pluralized as necessary.
+      
+      *Usage:*
+      
+      <pre><code><r:search:results:count [label="..."] /></code></pre>
+    }
+    tag 'search:results:count' do |tag|
+      label = tag.attr['label'] || 'result'
+      pluralize tag.globals.results.total_entries, label
     end
 
     desc %{
       Returns the current page of search results.
     }
-    tag 'results:current_page' do |tag|
-      tag.locals.results.current_page
+    tag 'search:results:current_page' do |tag|
+      tag.globals.results.current_page
     end
 
     desc %{
       Returns the total number of pages of search results.
     }
-    tag 'results:total_pages' do |tag|
-      tag.locals.results.total_pages
+    tag 'search:results:total_pages' do |tag|
+      tag.globals.results.total_pages
     end
 
     desc %{
       Displays the original search term, sanitized for display.
     }
-    tag 'results:query' do |tag|
+    tag 'search:query' do |tag|
       ActionController::Base.helpers.strip_tags tag.locals.query
     end
 
     desc %{
       Iterates over each search result. Sets @tag.locals.page@ to the current result.
     }
-    tag 'results:each' do |tag|
-      tag.locals.results.collect do |result|
+    tag 'search:results:each' do |tag|
+      tag.globals.results.collect do |result|
         tag.locals.page = result
         tag.expand
       end.join("\n")
     end
 
     desc %{
-      Returns the associated excerpt for each search result. Takes an optional
-      @for@ attribute that can be set to @title@ or the name of a specific page
-      part. If @for@ is omitted, the excerpt will be drawn from the concatenation
-      of all page parts. If it is set to @title@ or the name of a part, the
-      excerpted text will be limited to the page's title or the named part.
+      Returns the associated excerpt for each search result. If you want to
+      take the excerpt from the page title or a specific page part, use the
+      optional @for@ attribute.
+      
+      *Usage:*
+
+      <pre><code><r:search:results:each:excerpt [for="title|part_name"]/></code></pre>
     }
-    tag 'results:each:excerpt' do |tag|
+    tag 'search:results:each:excerpt' do |tag|
       content = case tag.attr['for']
       when 'title' : tag.locals.page.title
       when nil : tag.locals.page.parts.map(&:content).join(' ')
       else tag.locals.page.part(tag.attr['for']).try(:content) || ''
       end
-      tag.locals.results.excerpt_for(content, tag.locals.page.class)
+      tag.globals.results.excerpt_for(content, tag.locals.page.class)
     end
 
     desc %{
@@ -78,9 +116,9 @@ module SphinxSearch
       @next_label@, @inner_window@, @outer_window@, and @separator@ attributes
       which will be forwarded to the WillPaginate link renderer.
     }
-    tag 'results:pagination' do |tag|
-      if tag.locals.results
-        will_paginate(tag.locals.results, tag.locals.pagination_opts)
+    tag 'search:results:pagination' do |tag|
+      if tag.globals.results
+        will_paginate(tag.globals.results, tag.locals.pagination_opts)
       end
     end
 
@@ -88,30 +126,8 @@ module SphinxSearch
       Renders if no query parameter was passed. Useful for handling empty GETs
       to a search page.
     }
-    tag 'results:unless_query' do |tag|
-      tag.expand if tag.locals.query.blank?
-    end
-
-    desc %{
-      Renders unless no query parameter was passed. Useful for handling empty GETs
-      to a search page.
-    }
-    tag 'results:if_query' do |tag|
-      tag.expand unless tag.locals.query.blank?
-    end
-
-    desc %{
-      Renders if no results were returned.
-    }
-    tag 'results:if_empty' do |tag|
-      tag.expand if tag.locals.results.empty?
-    end
-
-    desc %{
-      Renders if no results were returned.
-    }
-    tag 'results:unless_empty' do |tag|
-      tag.expand unless tag.locals.results.empty?
+    tag 'search:empty_query' do |tag|
+      tag.expand if tag.locals.query.try(:empty?)
     end
 
     def will_paginate_options(tag)

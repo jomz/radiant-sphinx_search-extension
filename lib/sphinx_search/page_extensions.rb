@@ -1,3 +1,5 @@
+require 'thinking_sphinx'
+
 module SphinxSearch
   module PageExtensions
    
@@ -6,8 +8,7 @@ module SphinxSearch
        set_property :delta => true, :group_concat_max_len => 8.kilobytes
        set_property :field_weights => { 'title' => 100 }
        indexes title, parts.content
-       has updated_at, status_id, virtual
-       has searchable, :type => :boolean
+       has updated_at, status_id, virtual, class_name
      end
 
    end
