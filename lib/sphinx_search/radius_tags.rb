@@ -121,7 +121,7 @@ module SphinxSearch
     end
 
     def thinking_sphinx_options(tag)
-      { :with => { :searchable => 1, :status_id => 100, :virtual => false }, :retry_stale => true }
+      { :with => { :status_id => 100, :virtual => false }, :retry_stale => true }
     end
   end
 end
