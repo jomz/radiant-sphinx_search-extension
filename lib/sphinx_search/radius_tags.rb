@@ -4,7 +4,7 @@ module SphinxSearch
     include ActionView::Helpers::TextHelper
 
     desc %{
-      Namespace for search tags.
+      Namespace for all search tags.
     }
     tag 'search' do |tag|
       tag.locals.query = tag.globals.page.request[Radiant::Config['search.param_name'].to_sym]
@@ -12,7 +12,15 @@ module SphinxSearch
     end
 
     desc %{
-      Renders a basic search form.
+      Renders a basic search form. Takes optional @id@ and @class@ values if
+      you need to target the form with specific CSS or JS; also takes an optional
+      @value@ tag as the label on the input. If for some reason you don't want
+      to use the default search term paramater @q@, you can override this by
+      defining @Radiant::Config['search.param_name']@ elsewhere in your application.
+
+      *Usage:*
+
+      <pre><code><r:search:form [id="form-id"] [class="form-class"] [value="Go"] /></code></pre>
     }
     tag 'search:form' do |tag|
       form_id = tag.attr['id'] || 'search-form'
@@ -28,7 +36,13 @@ module SphinxSearch
     end
 
     desc %{
-      Namespace for search results.
+      Namespace for search results. Expands if a query was passed and at least
+      one result was found. Takes a @paginated@ attribute and all the standard
+      pagination attributes.
+
+      *Usage:*
+
+      <pre><code><r:search:results [paginated="false|true"] [per_page="..."] [...other pagination attributes]>...</r:search:results></code></pre>
     }
     tag 'search:results' do |tag|
       options = thinking_sphinx_options(tag)
@@ -42,7 +56,7 @@ module SphinxSearch
     end
 
     desc %{
-      Renders if no results were returned.
+      Expands if a query was run but no results were returned.
     }
     tag 'search:no_results' do |tag|
       tag.expand if tag.globals.results.blank? and not tag.locals.query.blank?
@@ -85,6 +99,10 @@ module SphinxSearch
 
     desc %{
       Iterates over each search result. Sets @tag.locals.page@ to the current result.
+
+      *Usage:*
+
+      <pre><code><r:search:results:each>...</r:search:results:each></code></pre>
     }
     tag 'search:results:each' do |tag|
       tag.globals.results.collect do |result|
@@ -95,8 +113,8 @@ module SphinxSearch
 
     desc %{
       Returns the associated excerpt for each search result. If you want to
-      take the excerpt from the page title or a specific page part, use the
-      optional @for@ attribute.
+      take the excerpt from the page title or just one specific page part, use
+      the optional @for@ attribute.
       
       *Usage:*
 
@@ -112,9 +130,10 @@ module SphinxSearch
     end
 
     desc %{
-      Renders pagination for the results. Takes optional @class@, @previous_label@,
-      @next_label@, @inner_window@, @outer_window@, and @separator@ attributes
-      which will be forwarded to the WillPaginate link renderer.
+      Renders pagination links for the results.
+
+      *Usage:*
+      <pre><code><r:search:results paginated="true" [pagination options]>...<r:search:results:pagination /></r:search:results></code></pre>
     }
     tag 'search:results:pagination' do |tag|
       if tag.globals.results
@@ -123,21 +142,23 @@ module SphinxSearch
     end
 
     desc %{
-      Renders if no query parameter was passed. Useful for handling empty GETs
-      to a search page.
+      Renders if no a query was run without a term, e.g. someone hit the search
+      button without entering anything.
     }
     tag 'search:empty_query' do |tag|
       tag.expand if tag.locals.query.try(:empty?)
     end
 
-    def will_paginate_options(tag)
-      options = super
-      options[:renderer] &&= SphinxSearch::LinkRenderer.new(tag.globals.page.url, tag.locals.query)
-      options
-    end
+    private
 
-    def thinking_sphinx_options(tag)
-      { :with => { :status_id => 100, :virtual => false }, :retry_stale => true }
-    end
+      def will_paginate_options(tag)
+        options = super
+        options[:renderer] &&= SphinxSearch::LinkRenderer.new(tag.globals.page.url, tag.locals.query)
+        options
+      end
+
+      def thinking_sphinx_options(tag)
+        { :with => { :status_id => 100, :virtual => false }, :retry_stale => true }
+      end
   end
 end

@@ -3,62 +3,65 @@
 Adds ThinkingSphinx (<http://ts.freelancing-gods.com>) support to Radiant,
 including a paginated search results page.
 
-## Configuration
+## Installation
 
-Requires gems for Thinking Sphinx and Will Paginate, available at:
-http://github.com/freelancing-god/thinking-sphinx
-http://github.com/mislav/wil_paginate
+First you'll need to install Sphinx, available via your preferred package
+manager or from <http://sphinxsearch.com>.
 
-Once installed, add these lines to environment.rb:
+Installing the extension itself as a gem is preferred. Add to your
+`config/environment.rb:`
 
-    config.gem 'thinking-sphinx', :lib => 'thinking_sphinx'
-    config.gem 'mislav-will_paginate', :lib => 'will_paginate'
+    config.gem 'radiant-sphinx_search-extension'
 
-By default, only the first 8kB of any page's content will be indexed. You can 
-change this in page_extensions.rb if that's not enough space, or if you wish
-to reduce that in order to keep your indexes lean.
+After the gem is configured, run `rake db:migrate:extensions` and `rake
+radiant:extensions:update_all`. You should at least read the Thinking Sphinx
+quickstart guide, but these commands should be enough to get you started:
 
-This extension defines a Page index for you. Pages will be indexed on title 
-and content, with a field boost applied to title. Included attributes are: 
-`status_id`, `updated_at`, and a new boolean column called `searchable`. You
-can toggle the searchable attribute from within the page edit view if you wish
-to restrict certain pages from appearing in the results.
+    rake ts:in
+    rake ts:start
 
-To configure the number of results returned per page, adjust the `@@per_page`
-variable within the SearchPage class.
+## Indexing
 
-## Getting Search Results
+SphinxSearch indexes your pages on title and content (parts.) Sphinx
+attributes are created for `status_id`, `updated_at`, `virtual`, and
+`class_name`.
 
-A new Page subclass, SearchPage, will be available when adding a page to the
-tree. This page will accept a `query` param and return any matches, provided
-they are published and their `searchable` attribute is true.
+## Building a Search Page
 
-The following Radius tags are available when building a SearchPage:
+SphinxSearch adds a new Page subclass, SearchPage. This page serves as both
+the search form and the search results display.
 
- * `results` Opens the search results collection. Use `results:each` to 
-   iterate over them.
- * `results:count` The total (unpaginated) number of search results, appended
-   with the word "result," pluralized if appropriate.
- * `results:current_page` The current page of search results.
- * `results:total_pages` The total number of pages of results.
- * `results:query` The original query term. This is sanitized for safe 
-   display.
- * `results:each` Iterator for the search result collection.
- * `results:each:excerpt` Display the relevant excerpt for this search.
-   Requires ThinkingSphinx 1.2 or higher.
- * `results:pagination` Renders pagination links for the results collection.
-   Accepts optional `class`, `previous_label`, `next_label`, `inner_window`, 
-   `outer_window`, and `separator` attributes which will be forwarded to
-   WillPaginate's link renderer.
- * `results:unless_query` Expands if no `query` parameter was present.
- * `results:if_empty` Expands if the results collection was empty.
+There are a number of Radius tags available to the Search page, most of which
+are customizable to some extent. You can find the full documentation for these
+tags and their options in the tag reference, but a simple search page might
+look like this:
 
-## An Important Note About Page Subclasses
+    <r:search>
+      <r:form />
+      <p>Your search for <strong><r:query /></strong> returned <r:count />.</p>
+      <r:results paginated="true">
+        <r:each>
+          <h3><r:link /></h3>
+          <p><r:excerpt /></p>
+        </r:each>
+        <r:pagination />
+      </r:results>
+    </r:search>
 
-Load order is important. If you're using extensions that add Page subclasses
-(**including the built-in Archive extension!**) you must load Sphinx Search
-first by specifying an extension load order in environment.rb. The simplest
-way is:
+## NoMethodError
+
+If you're using some versions of Radiant (generally <= 0.9.1) or certain
+3rd-party extensions, you may see this error:
+
+    NoMethodError
+    
+    You have a nil object when you didn't expect it!
+    You might have expected an instance of Array.
+    The error occurred while evaluating nil.<<
+
+This is a load-order problem and it means another extension created a Page
+subclass before SphinxSearch had a chance to extend the base class. The
+easiest way around this is to simply load SphinxSearch first:
 
     config.extensions = [:sphinx_search, :all]
 
