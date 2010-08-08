@@ -6,7 +6,6 @@ class SphinxSearchExtension < Radiant::Extension
   def activate
     Page.send(:include, SphinxSearch::PageExtensions)
     PageContext.send(:include, SphinxSearch::PageContextExtensions)
-    Radiant::Config["search.param_name"] ||= 'q'
   end
   
   def deactivate

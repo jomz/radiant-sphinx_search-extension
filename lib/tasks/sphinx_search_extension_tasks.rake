@@ -34,9 +34,13 @@ namespace :radiant do
 
       desc "Copies the sphinx.yml config to the project root"
       task :config => :environment do
-        template = File.join(SphinxSearchExtension.root, %w(lib templates sphinx.yml))
-        config = File.join(RAILS_ROOT, %w(config sphinx.yml))
-        cp(template, config, :verbose => false) unless File.exists?(config)
+        config_temp = File.join(SphinxSearchExtension.root, %w(lib templates sphinx.yml))
+        config_dest = File.join(RAILS_ROOT, %w(config sphinx.yml))
+        cp(config_temp, config_dest, :verbose => false) unless File.exists?(config_dest)
+
+        init_temp = File.join(SphinxSearchExtension.root, %w(lib templates initializer.rb))
+        init_dest = File.join(RAILS_ROOT, %w(config initializers sphinx_search.rb))
+        cp(init_temp, init_dest, :verbose => false) unless File.exists?(init_dest)
       end
       task :update => :config
 

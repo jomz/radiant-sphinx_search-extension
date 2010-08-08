@@ -7,7 +7,7 @@ module SphinxSearch
       Namespace for all search tags.
     }
     tag 'search' do |tag|
-      tag.locals.query = tag.globals.page.request[Radiant::Config['search.param_name'].to_sym]
+      tag.locals.query = tag.globals.page.request[SphinxSearch.param_name.to_sym]
       tag.expand
     end
 
@@ -16,7 +16,7 @@ module SphinxSearch
       you need to target the form with specific CSS or JS; also takes an optional
       @value@ tag as the label on the input. If for some reason you don't want
       to use the default search term paramater @q@, you can override this by
-      defining @Radiant::Config['search.param_name']@ elsewhere in your application.
+      defining @SphinxSearch.param_name@ in @/config/initializers/sphinx_search.rb@.
 
       *Usage:*
 
@@ -26,7 +26,7 @@ module SphinxSearch
       form_id = tag.attr['id'] || 'search-form'
       form_class = tag.attr['class'] || 'search-form'
       form_value = tag.attr['value'] || 'Search'
-      form_input = Radiant::Config['search.param_name'] || 'q'
+      form_input = SphinxSearch.param_name || 'q'
       return <<-HTML
         <form action="#{tag.globals.page.url}" method="get" id="#{form_id}" class="#{form_class}">
           <input type="text" name="#{form_input}" value="#{tag.locals.query}">
