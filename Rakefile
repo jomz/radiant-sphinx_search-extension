@@ -5,7 +5,7 @@ begin
     gem.summary = %Q{Sphinx Search Extension for Radiant CMS}
     gem.description = %Q{Adds fulltext search capability to Radiant content via Thinking Sphinx.}
     gem.email = "git@digitalpulp.com"
-    gem.homepage = "http://github.com/digitalpulp/radiant-sphinx_search-extension"
+    gem.homepage = "http://ext.radiantcms.org/extensions/15-sphinx-search"
     gem.authors = ["Josh French", "Kunal Shah", "Justin Blecher"]
     gem.add_dependency 'radiant'
     gem.add_dependency 'thinking-sphinx', '>= 1.3.3'
