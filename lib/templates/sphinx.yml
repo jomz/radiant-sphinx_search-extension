@@ -1,0 +1,6 @@
+development: &dev
+  port: 9312
+  html_strip: true
+
+production:
+  <<: *dev

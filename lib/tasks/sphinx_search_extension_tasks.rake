@@ -32,6 +32,14 @@ namespace :radiant do
         end
       end
 
+      desc "Copies the sphinx.yml config to the project root"
+      task :config => :environment do
+        template = File.join(SphinxSearchExtension.root, %w(lib templates sphinx.yml))
+        config = File.join(RAILS_ROOT, %w(config sphinx.yml))
+        cp(template, config, :verbose => false) unless File.exists?(config)
+      end
+      task :update => :config
+
       desc 'Run specs with coverage'
       task :coverage do
         Spec::Rake::SpecTask.new('radiant:extensions:sphinx_search:coverage') do |t|
