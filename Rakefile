@@ -1,4 +1,18 @@
-# I think this is the one that should be moved to the extension Rakefile template
+begin
+  require 'jeweler'
+  Jeweler::Tasks.new do |gem|
+    gem.name = "radiant-sphinx_search-extension"
+    gem.summary = %Q{Sphinx Search Extension for Radiant CMS}
+    gem.description = %Q{Adds fulltext search capability to Radiant content via Thinking Sphinx.}
+    gem.email = "git@digitalpulp.com"
+    gem.homepage = "http://github.com/digitalpulp/radiant-sphinx_search-extension"
+    gem.authors = ["Josh French", "Kunal Shah", "Justin Blecher"]
+    gem.add_dependency 'radiant'
+    gem.add_dependency 'thinking-sphinx', '>= 1.3.3'
+  end
+rescue LoadError
+  puts "Jeweler (or a dependency) not available. This is only required if you plan to package page-factory as a gem."
+end
 
 # In rails 1.2, plugins aren't available in the path until they're loaded.
 # Check to see if the rspec plugin is installed first and require

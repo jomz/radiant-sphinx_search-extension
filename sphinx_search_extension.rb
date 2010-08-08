@@ -1,5 +1,5 @@
 class SphinxSearchExtension < Radiant::Extension
-  version "0.8.0"
+  version YAML::load_file(File.join(File.dirname(__FILE__), 'VERSION'))
   description "Search Pages with ThinkingSphinx"
   url "http://digitalpulp.com"
   
