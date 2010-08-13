@@ -1,0 +1,6 @@
+---
+en:
+  search : 'Search'
+  result :
+    one   : '1 result'
+    other : '{{count}} results'

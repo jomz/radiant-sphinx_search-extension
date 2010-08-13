@@ -26,7 +26,7 @@ module SphinxSearch
     tag 'search:form' do |tag|
       form_id = tag.attr['id'] || 'search-form'
       form_class = tag.attr['class'] || 'search-form'
-      form_value = tag.attr['button'] || 'Search'
+      form_value = tag.attr['button'] || I18n.translate('search')
       form_input = SphinxSearch.param_name || 'q'
       return <<-HTML
         <form action="#{tag.globals.page.url}" method="get" id="#{form_id}" class="#{form_class}">
@@ -73,8 +73,12 @@ module SphinxSearch
       <pre><code><r:search:results:count [label="..."] /></code></pre>
     }
     tag 'search:results:count' do |tag|
-      label = tag.attr['label'] || 'result'
-      pluralize tag.globals.results.total_entries, label
+      count = tag.globals.results.total_entries
+      if label = tag.attr['label']
+        pluralize count, label
+      else
+        I18n.translate('result', :count => count)
+      end
     end
 
     desc %{
