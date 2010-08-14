@@ -41,9 +41,14 @@ module SphinxSearch
       one result was found. Takes a @paginated@ attribute and all the standard
       pagination attributes.
 
+      Additional Thinking Sphinx options: @order@ and @sort_mode@ are passed
+      directly to Sphinx. Valid orderable attributes are @created_at@,
+      @updated_at@, @status_id@, @virtual@, and @title@. @sort_mode@ defaults
+      to @asc@ (ascending); to reverse this, use @sort_mode="desc"@.
+
       *Usage:*
 
-      <pre><code><r:search:results [paginated="false|true"] [per_page="..."] [...other pagination attributes]>...</r:search:results></code></pre>
+      <pre><code><r:search:results [paginated="false|true"] [per_page="..."] [order="..."] [sort_mode="ASC|DESC"] [...other pagination attributes]>...</r:search:results></code></pre>
     }
     tag 'search:results' do |tag|
       options = thinking_sphinx_options(tag)
@@ -163,11 +168,13 @@ module SphinxSearch
       end
 
       def thinking_sphinx_options(tag)
+        options = tag.attr.symbolize_keys.slice(:order, :sort_mode)
+        [:order, :sort_mode].each { |attr| options[attr] &&= options[attr].to_sym }
         {
           :with => { :status_id => 100, :virtual => false },
           :without => { :class_crc => SphinxSearch.hidden_classes.map(&:to_crc32) },
           :retry_stale => true
-        }
+        }.merge(options)
       end
   end
 end

@@ -16,10 +16,18 @@ describe Page do
   end
 
   describe "#thinking_sphinx_options" do
-    it "should description" do
+    before do
+      @tag = stub(:tag, :attr => { 'order' => 'title' })
+    end
+    it "should omit hidden classes" do
       SphinxSearch.hidden_classes = %w(FileNotFoundPage)
-      opts = SearchPage.new.send :thinking_sphinx_options, nil
+      opts = SearchPage.new.send :thinking_sphinx_options, @tag
       opts[:without][:class_crc].should include('FileNotFoundPage'.to_crc32)
+    end
+
+    it "should convert Sphinx options to TS format" do
+      opts = SearchPage.new.send :thinking_sphinx_options, @tag
+      opts[:order].should == :title
     end
   end
 end
