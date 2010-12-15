@@ -7,8 +7,7 @@ begin
     gem.email = "git@digitalpulp.com"
     gem.homepage = "http://ext.radiantcms.org/extensions/15-sphinx-search"
     gem.authors = ["Josh French", "Kunal Shah", "Justin Blecher"]
-    gem.add_dependency 'radiant'
-    gem.add_dependency 'thinking-sphinx', '>= 1.3.3'
+    gem.add_dependency 'thinking-sphinx', '>= 1.3.3', '< 2.0.0'
   end
 rescue LoadError
   puts "Jeweler (or a dependency) not available. This is only required if you plan to package page-factory as a gem."
